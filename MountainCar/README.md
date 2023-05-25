@@ -178,7 +178,7 @@ for e in range(num_episode):
             if next_state[0, 0] >= 0.5:
                 reward = 10  # 목표 지점에 도달한 경우
             else:
-                reward = -1  # 실패한 경우
+                reward = -1/np.abs(next_state[0, 0])  # 실패한 경우
                 
             score += reward
             
@@ -204,7 +204,7 @@ for e in range(num_episode):
 메모리가 1000개 이상일 때 부터 train을 시작하게끔 하였다. 
 주의해야 할 점은 현재 env.reset()값은 형식이 ([0.123123, 0.412412], {})로 지정되어있어 첫 번째 값을 따로 가져와야한다. 따라서 state는 env.reset[0]으로 지정한다.
 
-여기서 주목해야할 부분은 보상의 계산 방식인데, done일 때 next_state에서의 agent위치가 목표지점일 경우 20의 reward를 제공하였고, 아닐 경우 -1의 reward를 주었다. 
+여기서 주목해야할 부분은 보상의 계산 방식인데, done일 때 next_state에서의 agent위치가 목표지점일 경우 20의 reward를 제공하였고, 아닐 경우 -1에 현재 position의 역수를 곱한 값의 reward를 주었다. 기준점에서 멀 수록 더 적은 양의 punishment를 받게 됨으로서 더욱 빠른 학습이 가능하다.
 그렇게 진행하게되면 아래와 같이 학습된 모습을 볼 수 있다.
 
 episode: 102 | score avg 92.88 | memory length: 2000 | epsilon: 0.0100
