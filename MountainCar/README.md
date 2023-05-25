@@ -178,9 +178,10 @@ for e in range(num_episode):
                 reward = 1  # 목표 지점에 도달한 경우
             else:
                 if next_state[0, 0]<0:
-                    reward = next_state[0, 0]*0.05
+                    reward = next_state[0, 0]*0.01
                 else:
                     reward = next_state[0, 0]*0.5 # 실패한 경우
+                
                 
             score += reward
             
@@ -216,6 +217,9 @@ for e in range(num_episode):
 agent.model.load_weights("./save_model/model")
 agent.epsilon = 0.01
 
+plt.plot(episodes, scores, 'b')
+plt.show()
+
 for e in range(5):
     
     done = False
@@ -241,8 +245,11 @@ for e in range(5):
         if done:
             print("episode: {:3d} | score: {:3f}".format(e, score))
 ```
+에피소드별 score은 다음과 같다
+![score](./output.png)
 
 
 그렇게 진행하게되면 아래와 같이 학습된 모습을 볼 수 있다.
 
-![2023-05-25+11-12-46](https://github.com/Bosung-Baek/Reinforcement_Learning_Study/assets/81071956/1647ba16-1eac-408f-940c-5f6d735499a6)
+![2023-05-25+11-12-46](./2023-05-25%2B11-12-46.gif)
+
