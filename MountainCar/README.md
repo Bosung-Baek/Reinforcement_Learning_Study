@@ -174,11 +174,13 @@ for e in range(num_episode):
             next_state = np.reshape(next_state, [1, state_size])
 
             # 수정된 보상 계산
-
             if next_state[0, 0] >= 0.5:
-                reward = 10  # 목표 지점에 도달한 경우
+                reward = 1  # 목표 지점에 도달한 경우
             else:
-                reward = -1/(np.abs(next_state[0, 0])+1)  # 실패한 경우
+                if next_state[0, 0]<0:
+                    reward = next_state[0, 0]*0.01
+                else:
+                    reward = next_state[0, 0]*0.1 # 실패한 경우
                 
             score += reward
             
@@ -192,23 +194,55 @@ for e in range(num_episode):
                 agent.update_target_model()
 
                 score_avg = 0.9 * score_avg + 0.1 * score if score_avg != 0 else score
-                print("episode: {:3d} | score avg {:3.2f} | memory length: {:4d} | epsilon: {:.4f}".format(
-                    e, score_avg, len(agent.memory), agent.epsilon))
+                print("episode: {:3d} | score {:3.2f} | score avg {:3.2f} | memory length: {:4d} | epsilon: {:.4f}".format(
+                    e, score, score_avg, len(agent.memory), agent.epsilon))
 
 
                 
-                if score_avg > 150:
-                    
+                if score_avg > 90:
+                    #save model
+                    agent.model.save_weights("./save_model/model", save_format="tf")
                     sys.exit()
 ```
 메모리가 1000개 이상일 때 부터 train을 시작하게끔 하였다. 
 주의해야 할 점은 현재 env.reset()값은 형식이 ([0.123123, 0.412412], {})로 지정되어있어 첫 번째 값을 따로 가져와야한다. 따라서 state는 env.reset[0]으로 지정한다.
+주목해야할 부분은 보상을 산정하는 방식인데, 먼저 성공 조건에 도달하게 되면 10의 보상을 받고, 도달하지 않았을 경우 차의 위치를 양수, 음수일때로 구분한다.
+여기서 x좌표가 어떻게 출력되는지에 대한 이해가 필요한데, min = -1.2 max = 0.6이다. 이는 즉 음수 방향의 위치가 더 크다는 뜻이다. 따라서 음수일 경우에 적은 가중치를 부여하고, 위치가 양수일 경우에는 더 큰 가중치를 부여하여 뒤로 가더라도 가속도에 의해 더 멀리 갈 수 있어 전체적인 보상은 더 크게 나오게 된다.
 
-여기서 주목해야할 부분은 보상의 계산 방식인데, done일 때 next_state에서의 agent위치가 목표지점일 경우 10의 reward를 제공하였고, 아닐 경우 -1에 현재 position의 절댓값에 1을 더한 값의 역수를 곱한 값의 reward를 주었다. 기준점에서 멀 수록 더 적은 양의 punishment를 받게 됨으로서 더욱 빠른 학습이 가능하다.
+## 5. test
+최종적으로 평균 점수가 90점을 넘게 되면 가중치를 저장하게 되고, 그 가중치를 load해서 테스트를 진행하게 된다. 
+```python
+# play saved model
+agent.model.load_weights("./save_model/model")
+agent.epsilon = 0.01
+
+for e in range(5):
+    
+    done = False
+    score = 0
+    state = env.reset()[0]
+    state = np.reshape(state, [1, state_size])
+    
+    while not done:
+        env.render()
+        action = agent.get_action(state)
+        next_state, reward, _, done, _ = env.step(action)
+        next_state = np.reshape(next_state, [1, state_size])
+        if next_state[0, 0] >= 0.5:
+                reward = 1  # 목표 지점에 도달한 경우
+        else:
+            if next_state[0, 0]<0:
+                reward = next_state[0, 0]*0.01
+            else:
+                reward = next_state[0, 0]*0.1 # 실패한 경우
+                
+        score += reward
+        state = next_state
+        if done:
+            print("episode: {:3d} | score: {:3f}".format(e, score))
+```
+
+
 그렇게 진행하게되면 아래와 같이 학습된 모습을 볼 수 있다.
 
-episode: 102 | score avg 92.88 | memory length: 2000 | epsilon: 0.0100
-
 ![2023-05-25+11-12-46](https://github.com/Bosung-Baek/Reinforcement_Learning_Study/assets/81071956/1647ba16-1eac-408f-940c-5f6d735499a6)
-
-
