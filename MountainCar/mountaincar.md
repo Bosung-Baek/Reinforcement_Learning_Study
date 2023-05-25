@@ -212,3 +212,6 @@ for e in range(num_episode):
 
 episode: 102 | score avg 92.88 | memory length: 2000 | epsilon: 0.0100
 
+![2023-05-25+11-12-46](https://github.com/Bosung-Baek/Reinforcement_Learning_Study/assets/81071956/1647ba16-1eac-408f-940c-5f6d735499a6)
+
+
