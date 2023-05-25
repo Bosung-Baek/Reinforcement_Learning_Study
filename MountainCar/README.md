@@ -174,13 +174,11 @@ for e in range(num_episode):
             next_state = np.reshape(next_state, [1, state_size])
 
             # 수정된 보상 계산
-            if done:
-                if next_state[0, 0] >= 0.5:
-                    reward = 1  # 목표 지점에 도달한 경우
-                else:
-                    reward = -1  # 실패한 경우
+
+            if next_state[0, 0] >= 0.5:
+                reward = 10  # 목표 지점에 도달한 경우
             else:
-                reward = np.abs(next_state[0, 0] - (-0.5))
+                reward = -1  # 실패한 경우
                 
             score += reward
             
@@ -206,8 +204,7 @@ for e in range(num_episode):
 메모리가 1000개 이상일 때 부터 train을 시작하게끔 하였다. 
 주의해야 할 점은 현재 env.reset()값은 형식이 ([0.123123, 0.412412], {})로 지정되어있어 첫 번째 값을 따로 가져와야한다. 따라서 state는 env.reset[0]으로 지정한다.
 
-여기서 주목해야할 부분은 보상의 계산 방식인데, done일 때 next_state에서의 agent위치가 목표지점일 경우 1의 reward를 제공하였고, 아닐 경우 -1의 reward를 주었다. 그러나 목표까지의 이동 거리에 따른 가중치가 부여되어야 한다고 생각하였다. observation space의 왼쪽 일정 지점인 -0.5부터의 agent의 거리를 가중치로 부여하였다. 왼쪽 일정 지점을 기준으로 정한 이유는, 왼쪽 경사를 타고 올라가면서 얻은 위치에너지가 경사를 내려가며 운동에너지로 변환되고, 그에 따라 속도가 더욱 올라가기 때문이다. 아예 끝으로 정해두지 않고 -0.5로 지정한 것은 해당 위치에서 agent의 속도를 최대로 유지하더라도 끝지점에 도달할 수 있기 때문이다. 
-
+여기서 주목해야할 부분은 보상의 계산 방식인데, done일 때 next_state에서의 agent위치가 목표지점일 경우 20의 reward를 제공하였고, 아닐 경우 -1의 reward를 주었다. 
 그렇게 진행하게되면 아래와 같이 학습된 모습을 볼 수 있다.
 
 episode: 102 | score avg 92.88 | memory length: 2000 | epsilon: 0.0100
