@@ -6,7 +6,7 @@
 
  - 이를 해결하기 위한 DDPG(Deep Deterministic Policy Gradient)라는 DQN을 활용한 Actor-Critic 방식으로 연속적인 환경에서 해당 action의 값 자체를 예측하도록 하는 방법을 사용
 
-![Algorithm](.\mS6iGyJ.jpg)
+![Algorithm](InvertedPendulum/mS6iGyJ.jpg)
 
 (알고리즘은 궁금한 사람은 참고하도록 하자)
 
