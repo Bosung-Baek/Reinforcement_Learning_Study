@@ -6,7 +6,7 @@
 
  - 이를 해결하기 위한 DDPG(Deep Deterministic Policy Gradient)라는 DQN을 활용한 Actor-Critic 방식으로 연속적인 환경에서 해당 action의 값 자체를 예측하도록 하는 방법을 사용
 
-![Algorithm](.\mS6iGyJ.jpg)
+![Algorithm](mS6iGyJ.jpg)
 
 (알고리즘은 궁금한 사람은 참고하도록 하자)
 
@@ -237,6 +237,10 @@ if __name__ == "__main__":
 ```
 이것도 기존에 했던 과정과 매우 흡사하다. environment에 맞게 shape를 다듬는 과정이 살짝 다르고, 여기서 주목해야할 부분은 action 값을 근사하여 noise값과 더하여 action의 범주에 맞게 clip한 과정이다. 
 
+그렇게 학습을 진행하였을 때 153개의 episode만에 평균 -300 이상을 도달하는데 성공하는 것을 볼 수 있었다.
+
+![cap](cap.PNG)
+
 ---
 
 ## 3. test
@@ -269,11 +273,13 @@ for e in range(5):
 pygame.quit()
 env.close()
 ```
+
 에피소드별 score은 다음과 같다
-![score](./output.png)
+
+![score](output.png)
 
 
 그렇게 진행하게되면 아래와 같이 학습된 모습을 볼 수 있다.
 
-![Animation](./Animation.gif)
+![Animation](Animation.gif)
 
